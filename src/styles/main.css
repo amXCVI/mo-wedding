@@ -1029,6 +1029,8 @@ h3 {
   }
 
   .hero__media img {
+    inset: 0 auto auto 0;
+    height: 104%;
     object-position: 51% 58%;
   }
 
@@ -1070,6 +1072,7 @@ h3 {
   }
 
   .hero__media img {
+    height: 105%;
     object-position: 50% 58%;
   }
 
@@ -1139,6 +1142,7 @@ h3 {
   }
 
   .closing-photo img {
+    height: 105%;
     object-position: 46% 55%;
   }
 
