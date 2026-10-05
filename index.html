@@ -223,17 +223,32 @@
 
           <form class="rsvp-form reveal" data-rsvp-form novalidate>
             <div class="field">
-              <label for="guest-name">Имя и фамилия</label>
+              <label for="guest-names">Имена</label>
               <input
-                id="guest-name"
-                name="name"
+                id="guest-names"
+                name="names"
                 type="text"
-                autocomplete="name"
-                maxlength="100"
+                maxlength="300"
                 required
-                placeholder="Как к вам обращаться"
+                placeholder="Имена гостей"
               />
-              <span class="field__error" data-error-for="name"></span>
+              <span class="field__error" data-error-for="names"></span>
+            </div>
+
+            <div class="field">
+              <label for="guest-count">Количество гостей</label>
+              <input
+                id="guest-count"
+                name="guestCount"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                max="50"
+                step="1"
+                required
+                placeholder="Например, 2"
+              />
+              <span class="field__error" data-error-for="guestCount"></span>
             </div>
 
             <fieldset class="field attendance-field">

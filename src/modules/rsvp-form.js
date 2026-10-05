@@ -12,15 +12,29 @@ function setStatus(node, state) {
 }
 
 function validate(form) {
-  const name = form.elements.name.value.trim();
+  const names = form.elements.names.value.trim();
+  const guestCountValue = form.elements.guestCount.value;
+  const guestCount = Number(guestCountValue);
   const attendance = form.elements.attendance.value;
-  const nameError = form.querySelector('[data-error-for="name"]');
+  const namesError = form.querySelector('[data-error-for="names"]');
+  const guestCountError = form.querySelector(
+    '[data-error-for="guestCount"]',
+  );
   const attendanceError = form.querySelector('[data-error-for="attendance"]');
 
-  nameError.textContent = name ? "" : "Пожалуйста, укажите имя и фамилию.";
+  const isGuestCountValid =
+    guestCountValue !== "" &&
+    Number.isInteger(guestCount) &&
+    guestCount >= 1 &&
+    guestCount <= 50;
+
+  namesError.textContent = names ? "" : "Пожалуйста, укажите имена гостей.";
+  guestCountError.textContent = isGuestCountValid
+    ? ""
+    : "Укажите количество гостей от 1 до 50.";
   attendanceError.textContent = attendance ? "" : "Выберите один из вариантов.";
 
-  return Boolean(name && attendance);
+  return Boolean(names && isGuestCountValid && attendance);
 }
 
 async function sendResponse(payload) {
@@ -63,7 +77,8 @@ export function initRsvpForm() {
     if (!validate(form)) return;
 
     const payload = {
-      name: form.elements.name.value.trim(),
+      names: form.elements.names.value.trim(),
+      guestCount: Number(form.elements.guestCount.value),
       attendance: form.elements.attendance.value,
       website: form.elements.website.value,
       startedAt: Number(form.elements.startedAt.value),

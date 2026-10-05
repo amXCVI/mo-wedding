@@ -1,4 +1,5 @@
-const MAX_NAME_LENGTH = 100;
+const MAX_NAMES_LENGTH = 300;
+const MAX_GUEST_COUNT = 50;
 const MIN_FORM_TIME_MS = 1_500;
 
 function send(response, status, payload) {
@@ -26,14 +27,22 @@ export default async function handler(request, response) {
   const body = normalizeBody(request.body);
   if (!body) return send(response, 400, { ok: false, error: "Invalid JSON" });
 
-  const name = typeof body.name === "string" ? body.name.trim() : "";
+  const names = typeof body.names === "string" ? body.names.trim() : "";
+  const guestCount = Number(body.guestCount);
   const attendance = body.attendance;
   const startedAt = Number(body.startedAt);
   const elapsed = Date.now() - startedAt;
 
   if (body.website) return send(response, 200, { ok: true });
-  if (!name || name.length > MAX_NAME_LENGTH) {
-    return send(response, 422, { ok: false, error: "Invalid name" });
+  if (!names || names.length > MAX_NAMES_LENGTH) {
+    return send(response, 422, { ok: false, error: "Invalid names" });
+  }
+  if (
+    !Number.isInteger(guestCount) ||
+    guestCount < 1 ||
+    guestCount > MAX_GUEST_COUNT
+  ) {
+    return send(response, 422, { ok: false, error: "Invalid guest count" });
   }
   if (!["yes", "no"].includes(attendance)) {
     return send(response, 422, {
@@ -50,10 +59,11 @@ export default async function handler(request, response) {
   }
 
   const formActionUrl = process.env.GOOGLE_FORM_ACTION_URL;
-  const nameField = process.env.GOOGLE_FORM_NAME_FIELD;
+  const namesField = process.env.GOOGLE_FORM_NAMES_FIELD;
+  const guestCountField = process.env.GOOGLE_FORM_GUEST_COUNT_FIELD;
   const attendanceField = process.env.GOOGLE_FORM_ATTENDANCE_FIELD;
 
-  if (!formActionUrl || !nameField || !attendanceField) {
+  if (!formActionUrl || !namesField || !guestCountField || !attendanceField) {
     console.error("Google Form integration is not configured");
     return send(response, 503, {
       ok: false,
@@ -63,7 +73,8 @@ export default async function handler(request, response) {
 
   try {
     const formBody = new URLSearchParams({
-      [nameField]: name,
+      [namesField]: names,
+      [guestCountField]: String(guestCount),
       [attendanceField]: attendance === "yes" ? "Да, буду" : "К сожалению, не смогу",
     });
 
