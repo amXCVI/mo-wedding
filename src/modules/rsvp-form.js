@@ -1,3 +1,5 @@
+import { rsvpConfig } from "../rsvp-config.js";
+
 const messages = {
   idle: "",
   loading: "Отправляем ваш ответ…",
@@ -48,14 +50,25 @@ async function sendResponse(payload) {
     return { demo: true };
   }
 
-  const response = await fetch("/api/rsvp", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+  if (payload.website) return { demo: false };
+
+  const body = new URLSearchParams({
+    [rsvpConfig.fields.names]: payload.names,
+    [rsvpConfig.fields.guestCount]: String(payload.guestCount),
+    [rsvpConfig.fields.attendance]:
+      payload.attendance === "yes" ? "Да, буду" : "К сожалению, не смогу",
   });
 
-  if (!response.ok) throw new Error(`RSVP request failed: ${response.status}`);
-  return response.json();
+  // Google Forms does not expose CORS response headers. no-cors still sends the
+  // form-encoded request and lets this static site work without a server.
+  await fetch(rsvpConfig.actionUrl, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
+
+  return { demo: false };
 }
 
 export function initRsvpForm() {
