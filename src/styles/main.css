@@ -1096,7 +1096,7 @@ h3 {
 
   .hero__content {
     width: 100%;
-    padding: max(32px, 5svh) 18px max(88px, 12svh);
+    padding: max(32px, 5svh) 18px max(64px, 9svh);
   }
 
   .hero__media img {
